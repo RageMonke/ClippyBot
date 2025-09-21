@@ -10,14 +10,15 @@ function menuScrape(client, guildId, timezone) {
     const { data: info, error } = await supabase
         .from('menu')
         .select('location, channel_id, message_id')
-        .eq('guild_id', guildId);
+        .eq('guild_id', guildId)
+        .maybeSingle();
 
     if (error) {
         console.error(error);
         return;
     }
 
-    console.log('Fetched menu info:', info[0].channel_id);
+    console.log('Fetched menu info:', info);
     const ch = await client.channels.fetch(info[0].channel_id);
     const msg = await ch.messages.fetch(info[0].message_id);
     const location = info[0].location;
@@ -25,7 +26,7 @@ function menuScrape(client, guildId, timezone) {
     const { data } = await axios.get('https://www.ugent.be/student/nl/meer-dan-studeren/resto/restosencafetarias/restodebrug.htm');
     const $ = cheerio.load(data);
 
-    const menuUrl = $('#parent-fieldname-text > div > div > div:nth-child(1) > div > ul:nth-child(4) > li:nth-child(2) > a').attr('href');
+    const menuUrl = $('#parent-fieldname-text > div > div > div:nth-child(1) > div > ul:nth-child(4) > li:nth-child(1) > a').attr('href');
     const { data: menuData } = await axios.get(menuUrl);
     const $$ = cheerio.load(menuData);
 

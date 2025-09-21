@@ -3,7 +3,7 @@ const cron = require('node-cron');
 const { supabase } = require('../lib/supabase');
 
 function scheduleClearAttendance(client, guildId, timezone) {
-  cron.schedule('0 3 * * *', async () => {
+  cron.schedule('* 2 * * *', async () => {
     const { data: allData, error } = await supabase
         .from('library_attendance')
         .select('location, attendance, message_id, channel_id')
@@ -30,11 +30,18 @@ function scheduleClearAttendance(client, guildId, timezone) {
 
         const location = data.location;
 
+        // format today’s date, e.g. "21-09-2025"
+        const today = new Date().toLocaleDateString('nl-BE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
+
         const embed = new EmbedBuilder()
             .setColor('#393A40')
             .setTitle(`**Bibliotheek - ${location}**`)
             .setDescription(attendanceString)
-            .setFooter({ text: 'Klik op de knoppen hieronder om je aanwezigheid aan te geven.' });
+            .setFooter({ text: `Klik op de knoppen hieronder om je aanwezigheid op ${today} aan te geven.` });
 
         ch = await client.channels.fetch(data.channel_id);
         msg = await ch.messages.fetch(data.message_id);

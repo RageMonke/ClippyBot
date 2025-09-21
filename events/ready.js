@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+const { Events, ActivityType } = require('discord.js');
 
 module.exports = {
 	name: Events.ClientReady,
@@ -9,5 +9,10 @@ module.exports = {
 		require('../jobs/purge')(client);
 		require('../jobs/clearAttendance')(client);
 		require('../jobs/menuScrape')(client);
+
+		client.user.setActivity({
+			name: 'this server',
+			type: ActivityType.Watching,
+		});
 	},
 };
