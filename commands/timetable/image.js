@@ -12,13 +12,13 @@ module.exports = {
     .setName('timetable-image')
     .setDescription('Render the shared timetable as an image.')
     .addStringOption(o => o.setName('week_start').setDescription('YYYY-MM-DD; defaults to current week'))
-    .addStringOption(o => o.setName('layout')
-      .setDescription('vertical (default) or horizontal')
-      .addChoices(
-        { name: 'vertical (days as columns)', value: 'vertical' },
-        { name: 'horizontal (days as rows)', value: 'horizontal' },
-      ),
-    )
+    // .addStringOption(o => o.setName('layout')
+    //   .setDescription('vertical (default) or horizontal')
+    //   .addChoices(
+    //     { name: 'vertical (days as columns)', value: 'vertical' },
+    //     { name: 'horizontal (days as rows)', value: 'horizontal' },
+    //   ),
+    // )
     .addIntegerOption(o => o.setName('slotw').setDescription('px per 30-min (horizontal) e.g. 34-40'))
     .addIntegerOption(o => o.setName('dayrowh').setDescription('px per day row (horizontal) e.g. 110-140')),
   async execute(interaction) {
@@ -26,7 +26,7 @@ module.exports = {
 
     const startStr = interaction.options.getString('week_start');
     const weekStart = startStr ? dayjs(startStr).toDate() : monday(new Date()).toDate();
-    const layout = interaction.options.getString('layout') || 'vertical';
+    const layout = interaction.options.getString('layout') || 'horizontal';
 
     const { data: cals, error } = await supabase
       .from('calendars')
@@ -34,7 +34,7 @@ module.exports = {
       .eq('guild_id', interaction.guildId);
 
     if (error) return interaction.editReply('DB error fetching calendars.');
-    if (!cals || !cals.length) return interaction.editReply('No calendars linked yet. Ask members to run `/calendar-add`.');
+    if (!cals || !cals.length) return interaction.editReply('No calendars linked yet. Ask members to run `/calendar-connect`.');
 
     const users = [];
     for (const c of cals) {
@@ -58,8 +58,8 @@ module.exports = {
 
     const blocks = buildBlocks({ users, userEvents, weekStart });
 
-    const slotW = interaction.options.getInteger('slotw') ?? 34;
-    const dayRowH = interaction.options.getInteger('dayrowh') ?? 120;
+    const slotW = interaction.options.getInteger('slotw') ?? 60;
+    const dayRowH = interaction.options.getInteger('dayrowh') ?? 240;
 
     const png = (layout === 'horizontal')
       ? renderGridPNGHorizontal({
