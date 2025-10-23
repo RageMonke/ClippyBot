@@ -10,14 +10,14 @@ module.exports = {
 		require('../jobs/clearAttendance')(client);
 		require('../jobs/menuScrape')(client);
 
-		// client.user.setActivity({
-		// 	name: 'this server',
-		// 	type: ActivityType.Watching,
-		// });
-
 		client.user.setActivity({
-			name: 'Updating Commands',
-			type: ActivityType.Custom,
+			name: 'this server',
+			type: ActivityType.Watching,
 		});
+
+		// client.user.setActivity({
+		// 	name: 'Updating Commands',
+		// 	type: ActivityType.Custom,
+		// });
 	},
 };
