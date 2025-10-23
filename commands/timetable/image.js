@@ -6,21 +6,25 @@ const { readWeekEvents, monday } = require('../../lib/ics');
 const { buildBlocks } = require('../../lib/renderGrid');
 const { renderGridPNG } = require('../../lib/renderGrid');
 const { renderGridPNGHorizontal } = require('../../lib/renderGridHorizontal');
+const { renderGridPNGHorizontalUserRows } = require('../../lib/renderGridHorizontalUserRows');
+const { renderGridPNGByUser } = require('../../lib/renderGridByUser');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('timetable-image')
     .setDescription('Render the shared timetable as an image.')
     .addStringOption(o => o.setName('week_start').setDescription('YYYY-MM-DD; defaults to current week'))
-    // .addStringOption(o => o.setName('layout')
-    //   .setDescription('vertical (default) or horizontal')
-    //   .addChoices(
-    //     { name: 'vertical (days as columns)', value: 'vertical' },
-    //     { name: 'horizontal (days as rows)', value: 'horizontal' },
-    //   ),
-    // )
     .addIntegerOption(o => o.setName('slotw').setDescription('px per 30-min (horizontal) e.g. 34-40'))
-    .addIntegerOption(o => o.setName('dayrowh').setDescription('px per day row (horizontal) e.g. 110-140')),
+    .addIntegerOption(o => o.setName('dayrowh').setDescription('px per day row (horizontal) e.g. 110-140'))
+    .addStringOption(o => o.setName('layout')
+      .setDescription('vertical (default) or horizontal')
+      .addChoices(
+        { name: 'vertical (days as columns)', value: 'vertical' },
+        { name: 'horizontal (days as rows)', value: 'horizontal' },
+        // { name: 'horizontal (days × users)', value: 'horizontal-users' },
+        // { name: 'per-user (one row per person)', value: 'per-user' },
+      ),
+    ),
   async execute(interaction) {
     await interaction.deferReply();
 
@@ -61,7 +65,30 @@ module.exports = {
     const slotW = interaction.options.getInteger('slotw') ?? 60;
     const dayRowH = interaction.options.getInteger('dayrowh') ?? 240;
 
-    const png = (layout === 'horizontal')
+    const png =
+      layout === 'horizontal-users'
+      ? renderGridPNGHorizontalUserRows({
+          weekStartISO: dayjs(weekStart).format('YYYY-MM-DD'),
+          blocks,
+          users,
+          members: cals.length,
+          hours: { start: 8, end: 22 },
+          slotW: 32,
+          userRowH: 54,
+          leftLabelW: 120,
+        })
+      : layout === 'per-user'
+      ? renderGridPNGByUser({
+          weekStartISO: dayjs(weekStart).format('YYYY-MM-DD'),
+          blocks,
+          users,
+          members: cals.length,
+          hours: { start: 8, end: 22 },
+          slotW: 22,
+          rowH: 76,
+          leftLabelW: 130,
+        })
+      : layout === 'horizontal'
       ? renderGridPNGHorizontal({
           weekStartISO: dayjs(weekStart).format('YYYY-MM-DD'),
           blocks,
