@@ -3,7 +3,7 @@ const cron = require('node-cron');
 const { supabase } = require('../lib/supabase');
 
 function scheduleClearAttendance(client, guildId, timezone) {
-  cron.schedule('* 2 * * *', async () => {
+  cron.schedule('0 3 * * *', async () => {
     const { data: allData, error } = await supabase
         .from('library_attendance')
         .select('location, attendance, message_id, channel_id')
@@ -40,7 +40,7 @@ function scheduleClearAttendance(client, guildId, timezone) {
         const embed = new EmbedBuilder()
             .setColor('#393A40')
             .setTitle(`**Bibliotheek - ${location}**`)
-            .setDescription(attendanceString + '```\nansi\n[1;31mDeze functie zal binnenkort verdwijnen wegens weinig gebruik\n```')
+            .setDescription(attendanceString + '```ansi\n[1;31mDeze functie zal binnenkort verdwijnen wegens weinig gebruik\n```')
             .setFooter({ text: `Klik op de knoppen hieronder om je aanwezigheid op ${today} aan te geven.` });
 
         ch = await client.channels.fetch(data.channel_id);
