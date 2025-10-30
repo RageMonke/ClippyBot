@@ -31,17 +31,19 @@ function scheduleClearAttendance(client, guildId, timezone) {
         const location = data.location;
 
         // format today’s date, e.g. "21-09-2025"
-        const today = new Date().toLocaleDateString('nl-BE', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        });
+        // const today = new Date().toLocaleDateString('nl-BE', {
+        //     year: 'numeric',
+        //     month: '2-digit',
+        //     day: '2-digit',
+        // });
 
         const embed = new EmbedBuilder()
             .setColor('#393A40')
             .setTitle(`**Bibliotheek - ${location}**`)
-            .setDescription(attendanceString + '```ansi\n[1;31mDeze functie zal binnenkort verdwijnen wegens weinig gebruik\n```')
-            .setFooter({ text: `Klik op de knoppen hieronder om je aanwezigheid op ${today} aan te geven.` });
+            .setDescription('```ansi\n[1;31mDeze functie is uitgeschakeld vanwege inactiviteit.\n```')
+            .setFooter({ text: 'Voor meer informatie kunt u contact opnemen met de eigenaar.' });
+            // .setDescription(attendanceString + '```ansi\n[1;31mDeze functie zal binnenkort verdwijnen wegens weinig gebruik\n```')
+            // .setFooter({ text: `Klik op de knoppen hieronder om je aanwezigheid op ${today} aan te geven.` });
 
         ch = await client.channels.fetch(data.channel_id);
         msg = await ch.messages.fetch(data.message_id);
