@@ -48,6 +48,7 @@ function scheduleClearAttendance(client, guildId, timezone) {
         ch = await client.channels.fetch(data.channel_id);
         msg = await ch.messages.fetch(data.message_id);
         await msg.edit({ embeds: [embed] });
+        await msg.edit({ components: [] });
 
         const { err } = await supabase
             .from('library_attendance')
